@@ -1,0 +1,369 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Year 10 Physics: stopping distances redo and self-mark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Overpass:wght@400;600;800&family=Overpass+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+:root{
+ --paper:#FFFFFF; --page:#EEF0F1; --ink:#1F2428; --muted:#5A6268; --asphalt:#2E3338; --line:#F2C230; --line-ink:#5C4500;
+ --go:#257A4C; --go-bg:#E3F3E9; --stop:#B3352B; --stop-bg:#FBE7E4; --amber-bg:#FFF5D6;
+ --grid-major:#9FB3C2; --grid-minor:#DCE5EC; --border:#D3D8DC; --focus:#1F6FB5;
+ color-scheme:light;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+ --paper:#1E2327; --page:#14181B; --ink:#E9ECEE; --muted:#A3ABB1; --asphalt:#0F1214; --line:#F2C230; --line-ink:#F2C230;
+ --go:#62C38D; --go-bg:#183326; --stop:#F08A80; --stop-bg:#3A1E1B; --amber-bg:#3A3112;
+ --grid-major:#4B5D6B; --grid-minor:#2B353D; --border:#3A4248; --focus:#7DB7EA; color-scheme:dark; } }
+:root[data-theme="dark"]{
+ --paper:#1E2327; --page:#14181B; --ink:#E9ECEE; --muted:#A3ABB1; --asphalt:#0F1214; --line:#F2C230; --line-ink:#F2C230;
+ --go:#62C38D; --go-bg:#183326; --stop:#F08A80; --stop-bg:#3A1E1B; --amber-bg:#3A3112;
+ --grid-major:#4B5D6B; --grid-minor:#2B353D; --border:#3A4248; --focus:#7DB7EA; color-scheme:dark; }
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 80px)}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--page);color:var(--ink);font-family:'Overpass',system-ui,'Segoe UI',sans-serif;font-size:17px;line-height:1.55}
+img,svg{max-width:100%}
+.road{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:var(--asphalt);color:#fff;padding:10px 20px 12px}
+.road-inner{max-width:780px;margin:0 auto;display:flex;align-items:center;gap:16px}
+.road-title{font-weight:800;font-size:15px;white-space:nowrap}
+.lane{flex:1;position:relative;height:10px;border-radius:5px;background:repeating-linear-gradient(90deg,#59606a 0 18px,transparent 18px 30px);overflow:hidden}
+.lane-fill{position:absolute;inset:0 auto 0 0;width:0;background:var(--line);transition:width .5s ease}
+.road-score{font-family:'Overpass Mono',ui-monospace,monospace;font-size:15px;white-space:nowrap}
+main{max-width:780px;margin:0 auto;padding:28px 20px 80px}
+h1{font-size:clamp(28px,5vw,40px);line-height:1.1;margin:0 0 10px;font-weight:800;letter-spacing:-.01em}
+.lede{color:var(--muted);margin:0 0 22px;max-width:62ch}
+.howto{background:var(--paper);border:1px solid var(--border);border-radius:10px;padding:16px 20px;margin-bottom:22px}
+.howto ol{margin:6px 0 0;padding-left:22px}
+.howto li{margin:4px 0}
+label.name{display:flex;flex-wrap:wrap;gap:10px;align-items:center;font-weight:600;margin-bottom:28px}
+input,textarea,select{font:inherit;color:var(--ink);background:var(--paper);border:1.5px solid var(--border);border-radius:8px;padding:8px 10px}
+input:focus-visible,textarea:focus-visible,button:focus-visible,select:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.name input{flex:1;min-width:200px}
+.stem{background:var(--paper);border-left:6px solid var(--line);border-radius:4px 10px 10px 4px;padding:16px 20px;margin:34px 0 14px}
+.stem h2{margin:0 0 6px;font-size:22px}
+.stem p{margin:6px 0}
+.tablewrap{overflow-x:auto}
+table{border-collapse:collapse;margin:10px 0;min-width:300px}
+th,td{border:1px solid var(--border);padding:6px 14px;text-align:center}
+th{background:var(--page)}
+.graphwrap{overflow-x:auto;background:var(--paper);border-radius:10px;padding:8px}
+.graph{display:block;width:100%;min-width:420px;height:auto;font-family:'Overpass',sans-serif}
+.graph .ticks text{font-size:13px;fill:var(--ink)}
+.graph .axis-label{font-size:14px;fill:var(--ink);font-weight:600}
+.graph .curve-label{font-size:13px;fill:var(--ink);font-weight:600;paint-order:stroke;stroke:var(--paper);stroke-width:4px}
+.part{background:var(--paper);border:1px solid var(--border);border-radius:10px;padding:18px 20px;margin:14px 0}
+.part-head{display:flex;justify-content:space-between;gap:12px;align-items:baseline}
+.part-head h3{margin:0;font-size:18px}
+.marks{font-family:'Overpass Mono',ui-monospace,monospace;font-size:14px;color:var(--muted);white-space:nowrap}
+.part p{margin:8px 0}
+.row{display:flex;flex-wrap:wrap;gap:12px 18px;align-items:end;margin:12px 0}
+.field{display:flex;flex-direction:column;gap:4px;font-size:15px;font-weight:600}
+.field input{width:170px;font-family:'Overpass Mono',ui-monospace,monospace}
+.unit{font-weight:400;color:var(--muted)}
+textarea{width:100%;min-height:96px;resize:vertical;line-height:1.5}
+.working{min-height:70px}
+.small{font-size:14px;color:var(--muted)}
+.opts{display:grid;gap:8px;margin:10px 0}
+.opts label{display:flex;gap:10px;align-items:center;border:1.5px solid var(--border);border-radius:8px;padding:8px 12px;cursor:pointer}
+button{font:inherit;font-weight:700;border:0;border-radius:8px;padding:10px 18px;cursor:pointer;background:var(--asphalt);color:#fff}
+button.secondary{background:transparent;color:var(--ink);border:1.5px solid var(--border)}
+button:disabled{opacity:.45;cursor:not-allowed}
+.feedback{margin-top:14px;border-radius:8px;padding:12px 16px;display:none}
+.feedback.show{display:block}
+.feedback.full{background:var(--go-bg)}
+.feedback.part{background:var(--amber-bg)}
+.feedback.zero{background:var(--stop-bg)}
+.feedback .award{font-weight:800;font-size:18px;margin:0 0 6px}
+.feedback ul{margin:6px 0;padding-left:20px}
+.checklist{display:none;margin-top:12px;border:1.5px dashed var(--border);border-radius:8px;padding:12px 16px}
+.checklist.show{display:block}
+.checklist label{display:flex;gap:10px;align-items:flex-start;margin:8px 0}
+.checklist input{margin-top:5px;width:18px;height:18px;flex:none}
+.locked textarea,.locked input[type=text],.locked input[type=number]{background:var(--page)}
+.summary{background:var(--paper);border:2px solid var(--asphalt);border-radius:12px;padding:20px;margin-top:40px}
+.summary h2{margin:0 0 4px}
+.big{font-size:44px;font-weight:800;line-height:1}
+.sumtable{width:100%;min-width:0}
+.sumtable td:first-child,.sumtable th:first-child{text-align:left}
+.bar{height:8px;border-radius:4px;background:var(--page);overflow:hidden;min-width:80px}
+.bar span{display:block;height:100%;background:var(--go)}
+.copybox{width:100%;min-height:70px;font-family:'Overpass Mono',ui-monospace,monospace;font-size:14px}
+.target{background:var(--amber-bg);border-radius:8px;padding:12px 16px;margin:14px 0}
+@media (prefers-reduced-motion: reduce){.lane-fill{transition:none}}
+@media (max-width:560px){.road-title{display:none}.part,.stem,.howto{padding:14px}}
+</style>
+</head>
+<body>
+<div class="road" aria-hidden="false">
+ <div class="road-inner">
+  <span class="road-title">Stopping distances redo</span>
+  <div class="lane" role="progressbar" aria-label="Marks so far" aria-valuemin="0" aria-valuemax="22" aria-valuenow="0" id="lane"><div class="lane-fill" id="laneFill"></div></div>
+  <span class="road-score" id="roadScore">0 / 22 marks · 0 of 8 checked</span>
+ </div>
+</div>
+<main>
+<h1>Stopping distances: redo and self-mark</h1>
+<p class="lede">Year 10 Physics, September assessment. These are the questions from Q2 and Q3 that lose the most marks. Answer each one, check it, and see what you would score.</p>
+<div class="howto">
+ <strong>How it works</strong>
+ <ol>
+  <li>Work out each answer on paper first, then type it in. Show your working in the working box.</li>
+  <li>Press <em>Check my answer</em>. Once checked, an answer is locked, so check only when you are happy with it.</li>
+  <li>For written answers, you tick the mark-scheme points you actually wrote. Be honest: this is your estimate, not a competition.</li>
+  <li>Your total and your biggest win are at the bottom.</li>
+ </ol>
+</div>
+<label class="name">Your name <input id="studentName" type="text" autocomplete="name" placeholder="First name and surname"></label>
+
+<section class="stem" aria-labelledby="q2h">
+ <h2 id="q2h">Question 2: the truck</h2>
+ <p>A truck drives along a straight horizontal dry road. The driver has to stop because of an obstacle on the road.</p>
+ <p>The initial kinetic energy of the truck is 6.3 × 10<sup>5</sup> J. The mass of the truck is 7.5 × 10<sup>3</sup> kg.</p>
+</section>
+
+<div class="part" data-part="2bii">
+ <div class="part-head"><h3>Q2(b)(ii)</h3><span class="marks">4 marks</span></div>
+ <p>Calculate the initial speed of the truck.</p>
+ <textarea class="working" aria-label="Working for Q2(b)(ii)" placeholder="Working"></textarea>
+ <div class="row"><label class="field">Speed <span><input type="text" inputmode="decimal" data-in="v"> <span class="unit">m/s</span></span></label>
+ <button data-check>Check my answer</button></div>
+ <div class="checklist" data-list><p class="small">Your final answer was not right, but you can still earn method marks. Tick only what is in your working.</p></div>
+ <div class="feedback" data-fb></div>
+</div>
+
+<div class="part" data-part="2biii">
+ <div class="part-head"><h3>Q2(b)(iii)</h3><span class="marks">2 marks</span></div>
+ <p>The truck brakes until it stops. Explain why the work done by the braking force is equal to the kinetic energy of the truck before it started to brake.</p>
+ <textarea aria-label="Answer for Q2(b)(iii)" data-text placeholder="Write your answer"></textarea>
+ <div class="row"><button data-check>Check my answer</button></div>
+ <div class="checklist" data-list><p class="small">Tick each point that is in your answer, then confirm.</p></div>
+ <div class="feedback" data-fb></div>
+</div>
+
+<div class="part" data-part="2biv">
+ <div class="part-head"><h3>Q2(b)(iv)</h3><span class="marks">2 marks</span></div>
+ <p>The braking distance for the truck is 14 m. Calculate the braking force of the truck.</p>
+ <textarea class="working" aria-label="Working for Q2(b)(iv)" placeholder="Working"></textarea>
+ <div class="row"><label class="field">Braking force <span><input type="text" inputmode="decimal" data-in="f"> <span class="unit">N</span></span></label>
+ <button data-check>Check my answer</button></div>
+ <div class="checklist" data-list><p class="small">Your final answer was not right, but you can still earn a method mark. Tick only what is in your working.</p></div>
+ <div class="feedback" data-fb></div>
+</div>
+
+<div class="part" data-part="2c">
+ <div class="part-head"><h3>Q2(c)</h3><span class="marks">3 marks</span></div>
+ <p>The table shows the stopping distance data for a truck travelling at different speeds.</p>
+ <div class="tablewrap"><table><thead><tr><th>Speed in m/s</th><th>Stopping distance in m</th></tr></thead>
+ <tbody><tr><td>10</td><td>14</td></tr><tr><td>15</td><td>27</td></tr><tr><td>20</td><td>45</td></tr><tr><td>25</td><td>65</td></tr><tr><td>30</td><td>100</td></tr></tbody></table></div>
+ <p>Evaluate whether the stopping distance for a truck is directly proportional to speed.</p>
+ <textarea aria-label="Answer for Q2(c)" data-text placeholder="Write your answer"></textarea>
+ <div class="row"><button data-check>Check my answer</button></div>
+ <div class="checklist" data-list><p class="small">Tick each point that is in your answer, then confirm.</p></div>
+ <div class="feedback" data-fb></div>
+</div>
+
+<section class="stem" aria-labelledby="q3h">
+ <h2 id="q3h">Question 3: the car</h2>
+ <p>The graph shows how the thinking distance and the braking distance vary with the speed of a car. Read values carefully: each small square is 0.5 m/s across and 1 m up.</p>
+</section>
+<div class="graphwrap">
+<svg viewBox="0 0 560 420" role="img" aria-label="Graph of thinking distance and braking distance in metres against speed in metres per second, from 0 to 30 metres per second. Thinking distance is a straight line from 0 to 15 metres at 30 metres per second. Braking distance is a curve reaching 53 metres at 30 metres per second." class="graph">
+<g><line x1="56.0" y1="16" x2="56.0" y2="372" stroke="var(--grid-major)" stroke-width="1.2"/><line x1="64.1" y1="16" x2="64.1" y2="372" stroke="var(--grid-minor)" stroke-width="0.6"/><line x1="72.1" y1="16" x2="72.1" y2="372" stroke="var(--grid-minor)" stroke-width="0.6"/><line x1="80.2" y1="16" x2="80.2" y2="372" stroke="var(--grid-minor)" stroke-width="0.6"/><line x1="88.3" y1="16" x2="88.3" y2="372" stroke="var(--grid-minor)" stroke-width="0.6"/><line x1="96.3" y1="16" x2="96.3" y2="372" stroke="var(--grid-minor)" stroke-width="0.6"/><line x1="104.4" y1="16" x2="104.4" y2="372" stroke="var(--grid-minor)" stroke-width="0.6"/><line x1="112.5" y1="16" x2="112.5" y2="372" stroke="var(--grid-minor)" stroke-width="0.6"/><line x1="120.5" y1="16" x2="120.5" y2="372" stroke="var(--grid-minor)" stroke-width="0.6"/><line x1="128.6" y1="16" x2="128.6" y2="372" stroke="var(--grid-minor)" stroke-width="0.6"/><line x1="136.7" y1="16" x2="136.7" y2="372" stroke="var(--grid-major)" stroke-width="1.2"/><line x1="144.7" y1="16" x2="144.7" y2="372" stroke="var(--grid-minor)" stroke-width="0.6"/><line x1="152.8" y1="16" x2="152.8" y2="372" stroke="var(--grid-minor)" stroke-width="0.6"/><line x1="160.9" y1="16" x2="160.9" y2="372" stroke="var(--grid-minor)" stroke-width="0.6"/><line x1="168.9" y1="16" x2="168.9" y2="372" stroke="var(--grid-minor)" stroke-width="0.6"/><line x1="177.0" y1="16" x2="177.0" y2="372" stroke="var(--grid-minor)" stroke-width="0.6"/><line x1="185.1" y1="16" x2="185.1" y2="372" stroke="var(--grid-minor)" stroke-width="0.6"/><line x1="193.1" y1="16" x2="193.1" y2="372" stroke="var(--grid-minor)" stroke-width="0.6"/><line x1="201.2" y1="16" x2="201.2" y2="372" stroke="var(--grid-minor)" stroke-width="0.6"/><line x1="209.3" y1="16" x2="209.3" y2="372" stroke="var(--grid-minor)" stroke-width="0.6"/><line x1="217.3" y1="16" x2="217.3" y2="372" stroke="var(--grid-major)" stroke-width="1.2"/><line x1="225.4" y1="16" x2="225.4" y2="372" stroke="var(--grid-minor)" stroke-width="0.6"/><line x1="233.5" y1="16" x2="233.5" y2="372" stroke="var(--grid-minor)" stroke-width="0.6"/><line x1="241.5" y1="16" x2="241.5" y2="372" stroke="var(--grid-minor)" stroke-width="0.6"/><line x1="249.6" y1="16" x2="249.6" y2="372" stroke="var(--grid-minor)" stroke-width="0.6"/><line x1="257.7" y1="16" x2="257.7" y2="372" stroke="var(--grid-minor)" stroke-width="0.6"/><line x1="265.7" y1="16" x2="265.7" y2="372" stroke="var(--grid-minor)" stroke-width="0.6"/><line x1="273.8" y1="16" x2="273.8" y2="372" stroke="var(--grid-minor)" stroke-width="0.6"/><line x1="281.9" y1="16" x2="281.9" y2="372" stroke="var(--grid-minor)" stroke-width="0.6"/><line x1="289.9" y1="16" x2="289.9" y2="372" stroke="var(--grid-minor)" stroke-width="0.6"/><line x1="298.0" y1="16" x2="298.0" y2="372" stroke="var(--grid-major)" stroke-width="1.2"/><line x1="306.1" y1="16" x2="306.1" y2="372" stroke="var(--grid-minor)" stroke-width="0.6"/><line x1="314.1" y1="16" x2="314.1" y2="372" stroke="var(--grid-minor)" stroke-width="0.6"/><line x1="322.2" y1="16" x2="322.2" y2="372" stroke="var(--grid-minor)" stroke-width="0.6"/><line x1="330.3" y1="16" x2="330.3" y2="372" stroke="var(--grid-minor)" stroke-width="0.6"/><line x1="338.3" y1="16" x2="338.3" y2="372" stroke="var(--grid-minor)" stroke-width="0.6"/><line x1="346.4" y1="16" x2="346.4" y2="372" stroke="var(--grid-minor)" stroke-width="0.6"/><line x1="354.5" y1="16" x2="354.5" y2="372" stroke="var(--grid-minor)" stroke-width="0.6"/><line x1="362.5" y1="16" x2="362.5" y2="372" stroke="var(--grid-minor)" stroke-width="0.6"/><line x1="370.6" y1="16" x2="370.6" y2="372" stroke="var(--grid-minor)" stroke-width="0.6"/><line x1="378.7" y1="16" x2="378.7" y2="372" stroke="var(--grid-major)" stroke-width="1.2"/><line x1="386.7" y1="16" x2="386.7" y2="372" stroke="var(--grid-minor)" stroke-width="0.6"/><line x1="394.8" y1="16" x2="394.8" y2="372" stroke="var(--grid-minor)" stroke-width="0.6"/><line x1="402.9" y1="16" x2="402.9" y2="372" stroke="var(--grid-minor)" stroke-width="0.6"/><line x1="410.9" y1="16" x2="410.9" y2="372" stroke="var(--grid-minor)" stroke-width="0.6"/><line x1="419.0" y1="16" x2="419.0" y2="372" stroke="var(--grid-minor)" stroke-width="0.6"/><line x1="427.1" y1="16" x2="427.1" y2="372" stroke="var(--grid-minor)" stroke-width="0.6"/><line x1="435.1" y1="16" x2="435.1" y2="372" stroke="var(--grid-minor)" stroke-width="0.6"/><line x1="443.2" y1="16" x2="443.2" y2="372" stroke="var(--grid-minor)" stroke-width="0.6"/><line x1="451.3" y1="16" x2="451.3" y2="372" stroke="var(--grid-minor)" stroke-width="0.6"/><line x1="459.3" y1="16" x2="459.3" y2="372" stroke="var(--grid-major)" stroke-width="1.2"/><line x1="467.4" y1="16" x2="467.4" y2="372" stroke="var(--grid-minor)" stroke-width="0.6"/><line x1="475.5" y1="16" x2="475.5" y2="372" stroke="var(--grid-minor)" stroke-width="0.6"/><line x1="483.5" y1="16" x2="483.5" y2="372" stroke="var(--grid-minor)" stroke-width="0.6"/><line x1="491.6" y1="16" x2="491.6" y2="372" stroke="var(--grid-minor)" stroke-width="0.6"/><line x1="499.7" y1="16" x2="499.7" y2="372" stroke="var(--grid-minor)" stroke-width="0.6"/><line x1="507.7" y1="16" x2="507.7" y2="372" stroke="var(--grid-minor)" stroke-width="0.6"/><line x1="515.8" y1="16" x2="515.8" y2="372" stroke="var(--grid-minor)" stroke-width="0.6"/><line x1="523.9" y1="16" x2="523.9" y2="372" stroke="var(--grid-minor)" stroke-width="0.6"/><line x1="531.9" y1="16" x2="531.9" y2="372" stroke="var(--grid-minor)" stroke-width="0.6"/><line x1="540.0" y1="16" x2="540.0" y2="372" stroke="var(--grid-major)" stroke-width="1.2"/><line x1="56" y1="372.0" x2="540" y2="372.0" stroke="var(--grid-major)" stroke-width="1.2"/><line x1="56" y1="366.1" x2="540" y2="366.1" stroke="var(--grid-minor)" stroke-width="0.6"/><line x1="56" y1="360.1" x2="540" y2="360.1" stroke="var(--grid-minor)" stroke-width="0.6"/><line x1="56" y1="354.2" x2="540" y2="354.2" stroke="var(--grid-minor)" stroke-width="0.6"/><line x1="56" y1="348.3" x2="540" y2="348.3" stroke="var(--grid-minor)" stroke-width="0.6"/><line x1="56" y1="342.3" x2="540" y2="342.3" stroke="var(--grid-minor)" stroke-width="0.6"/><line x1="56" y1="336.4" x2="540" y2="336.4" stroke="var(--grid-minor)" stroke-width="0.6"/><line x1="56" y1="330.5" x2="540" y2="330.5" stroke="var(--grid-minor)" stroke-width="0.6"/><line x1="56" y1="324.5" x2="540" y2="324.5" stroke="var(--grid-minor)" stroke-width="0.6"/><line x1="56" y1="318.6" x2="540" y2="318.6" stroke="var(--grid-minor)" stroke-width="0.6"/><line x1="56" y1="312.7" x2="540" y2="312.7" stroke="var(--grid-major)" stroke-width="1.2"/><line x1="56" y1="306.7" x2="540" y2="306.7" stroke="var(--grid-minor)" stroke-width="0.6"/><line x1="56" y1="300.8" x2="540" y2="300.8" stroke="var(--grid-minor)" stroke-width="0.6"/><line x1="56" y1="294.9" x2="540" y2="294.9" stroke="var(--grid-minor)" stroke-width="0.6"/><line x1="56" y1="288.9" x2="540" y2="288.9" stroke="var(--grid-minor)" stroke-width="0.6"/><line x1="56" y1="283.0" x2="540" y2="283.0" stroke="var(--grid-minor)" stroke-width="0.6"/><line x1="56" y1="277.1" x2="540" y2="277.1" stroke="var(--grid-minor)" stroke-width="0.6"/><line x1="56" y1="271.1" x2="540" y2="271.1" stroke="var(--grid-minor)" stroke-width="0.6"/><line x1="56" y1="265.2" x2="540" y2="265.2" stroke="var(--grid-minor)" stroke-width="0.6"/><line x1="56" y1="259.3" x2="540" y2="259.3" stroke="var(--grid-minor)" stroke-width="0.6"/><line x1="56" y1="253.3" x2="540" y2="253.3" stroke="var(--grid-major)" stroke-width="1.2"/><line x1="56" y1="247.4" x2="540" y2="247.4" stroke="var(--grid-minor)" stroke-width="0.6"/><line x1="56" y1="241.5" x2="540" y2="241.5" stroke="var(--grid-minor)" stroke-width="0.6"/><line x1="56" y1="235.5" x2="540" y2="235.5" stroke="var(--grid-minor)" stroke-width="0.6"/><line x1="56" y1="229.6" x2="540" y2="229.6" stroke="var(--grid-minor)" stroke-width="0.6"/><line x1="56" y1="223.7" x2="540" y2="223.7" stroke="var(--grid-minor)" stroke-width="0.6"/><line x1="56" y1="217.7" x2="540" y2="217.7" stroke="var(--grid-minor)" stroke-width="0.6"/><line x1="56" y1="211.8" x2="540" y2="211.8" stroke="var(--grid-minor)" stroke-width="0.6"/><line x1="56" y1="205.9" x2="540" y2="205.9" stroke="var(--grid-minor)" stroke-width="0.6"/><line x1="56" y1="199.9" x2="540" y2="199.9" stroke="var(--grid-minor)" stroke-width="0.6"/><line x1="56" y1="194.0" x2="540" y2="194.0" stroke="var(--grid-major)" stroke-width="1.2"/><line x1="56" y1="188.1" x2="540" y2="188.1" stroke="var(--grid-minor)" stroke-width="0.6"/><line x1="56" y1="182.1" x2="540" y2="182.1" stroke="var(--grid-minor)" stroke-width="0.6"/><line x1="56" y1="176.2" x2="540" y2="176.2" stroke="var(--grid-minor)" stroke-width="0.6"/><line x1="56" y1="170.3" x2="540" y2="170.3" stroke="var(--grid-minor)" stroke-width="0.6"/><line x1="56" y1="164.3" x2="540" y2="164.3" stroke="var(--grid-minor)" stroke-width="0.6"/><line x1="56" y1="158.4" x2="540" y2="158.4" stroke="var(--grid-minor)" stroke-width="0.6"/><line x1="56" y1="152.5" x2="540" y2="152.5" stroke="var(--grid-minor)" stroke-width="0.6"/><line x1="56" y1="146.5" x2="540" y2="146.5" stroke="var(--grid-minor)" stroke-width="0.6"/><line x1="56" y1="140.6" x2="540" y2="140.6" stroke="var(--grid-minor)" stroke-width="0.6"/><line x1="56" y1="134.7" x2="540" y2="134.7" stroke="var(--grid-major)" stroke-width="1.2"/><line x1="56" y1="128.7" x2="540" y2="128.7" stroke="var(--grid-minor)" stroke-width="0.6"/><line x1="56" y1="122.8" x2="540" y2="122.8" stroke="var(--grid-minor)" stroke-width="0.6"/><line x1="56" y1="116.9" x2="540" y2="116.9" stroke="var(--grid-minor)" stroke-width="0.6"/><line x1="56" y1="110.9" x2="540" y2="110.9" stroke="var(--grid-minor)" stroke-width="0.6"/><line x1="56" y1="105.0" x2="540" y2="105.0" stroke="var(--grid-minor)" stroke-width="0.6"/><line x1="56" y1="99.1" x2="540" y2="99.1" stroke="var(--grid-minor)" stroke-width="0.6"/><line x1="56" y1="93.1" x2="540" y2="93.1" stroke="var(--grid-minor)" stroke-width="0.6"/><line x1="56" y1="87.2" x2="540" y2="87.2" stroke="var(--grid-minor)" stroke-width="0.6"/><line x1="56" y1="81.3" x2="540" y2="81.3" stroke="var(--grid-minor)" stroke-width="0.6"/><line x1="56" y1="75.3" x2="540" y2="75.3" stroke="var(--grid-major)" stroke-width="1.2"/><line x1="56" y1="69.4" x2="540" y2="69.4" stroke="var(--grid-minor)" stroke-width="0.6"/><line x1="56" y1="63.5" x2="540" y2="63.5" stroke="var(--grid-minor)" stroke-width="0.6"/><line x1="56" y1="57.5" x2="540" y2="57.5" stroke="var(--grid-minor)" stroke-width="0.6"/><line x1="56" y1="51.6" x2="540" y2="51.6" stroke="var(--grid-minor)" stroke-width="0.6"/><line x1="56" y1="45.7" x2="540" y2="45.7" stroke="var(--grid-minor)" stroke-width="0.6"/><line x1="56" y1="39.7" x2="540" y2="39.7" stroke="var(--grid-minor)" stroke-width="0.6"/><line x1="56" y1="33.8" x2="540" y2="33.8" stroke="var(--grid-minor)" stroke-width="0.6"/><line x1="56" y1="27.9" x2="540" y2="27.9" stroke="var(--grid-minor)" stroke-width="0.6"/><line x1="56" y1="21.9" x2="540" y2="21.9" stroke="var(--grid-minor)" stroke-width="0.6"/><line x1="56" y1="16.0" x2="540" y2="16.0" stroke="var(--grid-major)" stroke-width="1.2"/></g>
+<line x1="56" y1="372" x2="540" y2="372" stroke="var(--ink)" stroke-width="1.6"/><line x1="56" y1="16" x2="56" y2="372" stroke="var(--ink)" stroke-width="1.6"/>
+<polyline points="56.0,372.0 64.1,370.6 72.1,369.1 80.2,367.5 88.3,365.7 96.3,363.8 104.4,361.8 112.5,359.6 120.5,357.3 128.6,354.9 136.7,352.3 144.7,349.7 152.8,346.8 160.9,343.9 168.9,340.8 177.0,337.6 185.1,334.3 193.1,330.8 201.2,327.2 209.3,323.5 217.3,319.6 225.4,315.6 233.5,311.5 241.5,307.2 249.6,302.8 257.7,298.3 265.7,293.6 273.8,288.9 281.9,283.9 289.9,278.9 298.0,273.7 306.1,268.4 314.1,263.0 322.2,257.4 330.3,251.7 338.3,245.9 346.4,239.9 354.5,233.8 362.5,227.6 370.6,221.2 378.7,214.8 386.7,208.1 394.8,201.4 402.9,194.5 410.9,187.5 419.0,180.4 427.1,173.1 435.1,165.7 443.2,158.1 451.3,150.5 459.3,142.7 467.4,134.8 475.5,126.7 483.5,118.5 491.6,110.2 499.7,101.7 507.7,93.2 515.8,84.4 523.9,75.6 531.9,66.6 540.0,57.5" fill="none" stroke="var(--ink)" stroke-width="2"/>
+<line x1="56.0" y1="372.0" x2="540.0" y2="283.0" stroke="var(--ink)" stroke-width="2"/>
+<g class="ticks"><text x="56.0" y="390" text-anchor="middle">0</text><text x="136.7" y="390" text-anchor="middle">5</text><text x="217.3" y="390" text-anchor="middle">10</text><text x="298.0" y="390" text-anchor="middle">15</text><text x="378.7" y="390" text-anchor="middle">20</text><text x="459.3" y="390" text-anchor="middle">25</text><text x="540.0" y="390" text-anchor="middle">30</text><text x="48" y="376.0" text-anchor="end">0</text><text x="48" y="316.7" text-anchor="end">10</text><text x="48" y="257.3" text-anchor="end">20</text><text x="48" y="198.0" text-anchor="end">30</text><text x="48" y="138.7" text-anchor="end">40</text><text x="48" y="79.3" text-anchor="end">50</text><text x="48" y="20.0" text-anchor="end">60</text></g>
+<text x="533.5" y="45.7" text-anchor="end" class="curve-label">braking distance</text>
+<text x="533.5" y="265.2" text-anchor="end" class="curve-label">thinking distance</text>
+<text x="298.0" y="414" text-anchor="middle" class="axis-label">Speed in m/s</text>
+<text x="14" y="194.0" text-anchor="middle" class="axis-label" transform="rotate(-90 14 194.0)">Distance in m</text>
+</svg>
+</div>
+
+<div class="part" data-part="3c">
+ <div class="part-head"><h3>Q3(c)</h3><span class="marks">3 marks</span></div>
+ <p>Determine the stopping distance of the car when the speed of the car is 20 m/s.</p>
+ <div class="row">
+  <label class="field">Thinking distance at 20 m/s <span><input type="text" inputmode="decimal" data-in="td"> <span class="unit">m</span></span></label>
+  <label class="field">Braking distance at 20 m/s <span><input type="text" inputmode="decimal" data-in="bd"> <span class="unit">m</span></span></label>
+  <label class="field">Stopping distance <span><input type="text" inputmode="decimal" data-in="sd"> <span class="unit">m</span></span></label>
+ </div>
+ <div class="row"><button data-check>Check my answer</button></div>
+ <div class="feedback" data-fb></div>
+</div>
+
+<div class="part" data-part="3di">
+ <div class="part-head"><h3>Q3(d)(i)</h3><span class="marks">1 mark</span></div>
+ <p>State the formula linking average speed, distance moved and time taken.</p>
+ <div class="opts" role="radiogroup" aria-label="Formula options">
+  <label><input type="radio" name="f3di" value="a"> average speed = distance moved × time taken</label>
+  <label><input type="radio" name="f3di" value="b"> average speed = distance moved ÷ time taken</label>
+  <label><input type="radio" name="f3di" value="c"> average speed = time taken ÷ distance moved</label>
+  <label><input type="radio" name="f3di" value="d"> average speed = distance moved + time taken</label>
+ </div>
+ <p class="small">In the real paper you write this yourself. Can you write it without the options?</p>
+ <div class="row"><button data-check>Check my answer</button></div>
+ <div class="feedback" data-fb></div>
+</div>
+
+<div class="part" data-part="3dii">
+ <div class="part-head"><h3>Q3(d)(ii)</h3><span class="marks">3 marks</span></div>
+ <p>Determine the reaction time of the driver of the car.</p>
+ <p class="small">Choose one speed from the graph and read the thinking distance at that speed.</p>
+ <div class="row">
+  <label class="field">Speed I chose <span><input type="text" inputmode="decimal" data-in="sp"> <span class="unit">m/s</span></span></label>
+  <label class="field">Thinking distance I read <span><input type="text" inputmode="decimal" data-in="dd"> <span class="unit">m</span></span></label>
+  <label class="field">Reaction time <span><input type="text" inputmode="decimal" data-in="rt"> <span class="unit">s</span></span></label>
+ </div>
+ <div class="row"><button data-check>Check my answer</button></div>
+ <div class="feedback" data-fb></div>
+</div>
+
+<div class="part" data-part="3e">
+ <div class="part-head"><h3>Q3(e)</h3><span class="marks">4 marks</span></div>
+ <p>Calculate the mean braking acceleration of the car as it brakes to a stop from an initial speed of 30 m/s.</p>
+ <textarea class="working" aria-label="Working for Q3(e)" placeholder="Working"></textarea>
+ <div class="row">
+  <label class="field">Distance I used <span><input type="text" inputmode="decimal" data-in="bd"> <span class="unit">m</span></span></label>
+  <label class="field">Acceleration <span><input type="text" inputmode="decimal" data-in="a"> <span class="unit">m/s²</span></span></label>
+  <button data-check>Check my answer</button>
+ </div>
+ <div class="checklist" data-list><p class="small">Your final answer was not right, but you can still earn method marks. Tick only what is in your working.</p></div>
+ <div class="feedback" data-fb></div>
+</div>
+
+<section class="summary" id="summary" aria-live="polite">
+ <h2>Your result</h2>
+ <p class="small" id="sumNote">Check all eight answers to see your full result.</p>
+ <p><span class="big" id="sumTotal">0</span> <span class="marks">/ 22 marks</span> <span class="marks" id="sumPct"></span></p>
+ <div class="tablewrap"><table class="sumtable"><thead><tr><th>Question</th><th>Marks</th><th>Out of</th><th></th></tr></thead><tbody id="sumRows"></tbody></table></div>
+ <div class="target" id="target" hidden></div>
+ <p><strong>Copy this into the Teams assignment</strong> so Mrs Temple has your marks.</p>
+ <textarea class="copybox" id="copybox" readonly aria-label="Your results to copy"></textarea>
+ <div class="row"><button class="secondary" id="copyBtn">Copy my results</button><button class="secondary" id="resetBtn">Start again</button></div>
+</section>
+</main>
+<script>
+(function(){
+const PARTS={
+ '2bii':{label:'Q2(b)(ii)',max:4,tip:'Rearranging KE = ½ × m × v²: divide KE by ½m to get v², then square-root.'},
+ '2biii':{label:'Q2(b)(iii)',max:2,tip:'Energy explanations: name the stores (kinetic to thermal) and say the kinetic store ends empty.'},
+ '2biv':{label:'Q2(b)(iv)',max:2,tip:'Work done = force × distance, so force = work done ÷ distance.'},
+ '2c':{label:'Q2(c)',max:3,tip:'Test proportionality with numbers: if speed doubles, does stopping distance double? Give two comparisons and a conclusion.'},
+ '3c':{label:'Q3(c)',max:3,tip:'Stopping distance = thinking distance + braking distance. Read both off the graph at the same speed.'},
+ '3di':{label:'Q3(d)(i)',max:1,tip:'Learn it: average speed = distance moved ÷ time taken.'},
+ '3dii':{label:'Q3(d)(ii)',max:3,tip:'Reaction time = thinking distance ÷ speed, using one pair of readings from the thinking-distance line.'},
+ '3e':{label:'Q3(e)',max:4,tip:'In v² = u² + 2as use the braking distance only (53 m), v = 0, u = 30, and keep the 2.'}
+};
+const ORDER=Object.keys(PARTS); const TOTAL=22;
+const LISTS={
+ '2bii':['I substituted the numbers into KE = ½ × m × v² (6.3 × 10⁵ = 0.5 × 7.5 × 10³ × v²)','I rearranged to get v² on its own (v² = 6.3 × 10⁵ ÷ (0.5 × 7.5 × 10³))','I square-rooted to find v'],
+ '2biii':['The braking force does work, transferring energy from the truck’s kinetic store to the thermal store (the brakes heat up)','When the truck has stopped it has no energy left in its kinetic store, so all of it has been transferred'],
+ '2biv':['I used work done = force × distance with 6.3 × 10⁵ J and 14 m, and rearranged to F = 6.3 × 10⁵ ÷ 14'],
+ '2c':['I compared two rows with numbers, e.g. speed doubles from 10 to 20 m/s but stopping distance goes from 14 m to 45 m, which is more than double (or I calculated a ratio such as 14 ÷ 10 = 1.4)','I compared a different pair of rows, or calculated another ratio (e.g. 100 ÷ 30 = 3.3)','I concluded that the ratios are different, so stopping distance is not directly proportional to speed','I did not use numbers, but I said stopping distance does not go up in equal steps'],
+ '3e':['I substituted into v² = u² + 2as with v = 0 and u = 30 m/s','I rearranged to find a, e.g. a = (0 − 30²) ÷ (2 × s)']
+};
+const state={}; let name='';
+const KEY='y10-stopping-redo-v1';
+function save(){try{const ins={};document.querySelectorAll('.part').forEach(p=>{ins[p.dataset.part]=[...p.querySelectorAll('input[type=text],textarea')].map(x=>x.value);const r=p.querySelector('input[type=radio]:checked');if(r)ins[p.dataset.part].push('radio:'+r.value);});localStorage.setItem(KEY,JSON.stringify({state,name,ins}));}catch(e){}}
+function num(s){if(s==null)return NaN;s=String(s).trim().replace(/,/g,'').replace(/\s+/g,'').replace(/[−–]/g,'-').replace(/[×*]/g,'x').toLowerCase();
+ let m=s.match(/^(-?\d*\.?\d+)x10\^?(-?\d+)$/); if(m)return parseFloat(m[1])*Math.pow(10,parseInt(m[2]));
+ if(/^-?\d*\.?\d+(e-?\d+)?$/.test(s))return parseFloat(s); return NaN;}
+const inr=(v,a,b)=>!isNaN(v)&&v>=a&&v<=b;
+function partEl(id){return document.querySelector('.part[data-part="'+id+'"]');}
+function val(id,k){const e=partEl(id).querySelector('[data-in="'+k+'"]');return e?num(e.value):NaN;}
+function text(id){const e=partEl(id).querySelector('[data-text]');return e?e.value.trim():'';}
+function showFb(id,marks,points,extra){const p=partEl(id),fb=p.querySelector('[data-fb]'),max=PARTS[id].max;
+ fb.className='feedback show '+(marks===max?'full':marks>0?'part':'zero');
+ fb.innerHTML='';const a=document.createElement('p');a.className='award';a.textContent=marks+' out of '+max+(marks===max?': full marks':'');fb.appendChild(a);
+ if(extra){const e=document.createElement('p');e.textContent=extra;fb.appendChild(e);}
+ if(points&&points.length){const h=document.createElement('p');h.className='small';h.textContent='Mark scheme';fb.appendChild(h);const ul=document.createElement('ul');points.forEach(t=>{const li=document.createElement('li');li.textContent=t;ul.appendChild(li);});fb.appendChild(ul);}}
+function lock(id){const p=partEl(id);p.classList.add('locked');p.querySelectorAll('input,textarea,button').forEach(x=>{x.disabled=true;});}
+function finish(id,marks,points,extra){state[id]={m:marks};showFb(id,marks,points,extra);lock(id);update();save();}
+function openList(id,intro,cap,base,points,extra,ruleFn){const p=partEl(id),box=p.querySelector('[data-list]');box.classList.add('show');
+ if(intro){const i=document.createElement('p');i.textContent=intro;i.style.fontWeight='600';box.insertBefore(i,box.firstChild);}
+ const boxes=LISTS[id].map((t,i)=>{const l=document.createElement('label');const c=document.createElement('input');c.type='checkbox';c.value=i;l.appendChild(c);const s=document.createElement('span');s.textContent=t;l.appendChild(s);box.appendChild(l);return c;});
+ const b=document.createElement('button');b.textContent='Confirm my marks';b.className='secondary';b.style.marginTop='8px';box.appendChild(b);
+ p.querySelector('[data-check]').disabled=true;p.querySelectorAll('[data-in],[data-text]').forEach(x=>x.disabled=true);
+ b.addEventListener('click',()=>{const ticked=boxes.map(c=>c.checked);let m=ruleFn?ruleFn(ticked):ticked.filter(Boolean).length;m=Math.min(cap,base+m);box.querySelectorAll('input,button').forEach(x=>x.disabled=true);finish(id,m,points,extra);});}
+const MS={
+ '2bii':['Substitution into KE = ½ × m × v² (1)','Rearrangement for v² (1)','Rearrangement for v (1)','Evaluation: v = 13 m/s (1)','Powers of ten errors are ignored for the first three marks.'],
+ '2biii':['Braking force does work, transferring energy from the kinetic store to the thermal store (1)','The truck has no energy in its kinetic store when stopped (1)'],
+ '2biv':['Substitution and rearrangement: 6.3 × 10⁵ = F × 14, so F = 6.3 × 10⁵ ÷ 14 (1)','Evaluation: F = 45 000 N (1)'],
+ '2c':['Compares two rows, e.g. 20 ÷ 10 = 2 but 45 ÷ 14 = 3.2 (1)','Compares a different pair of rows (1)','Concludes the ratios are not the same, so not directly proportional (1, only with a comparison)','Without numbers, “does not go up in equal intervals” can score 1.'],
+ '3c':['Idea that stopping distance = thinking distance + braking distance (1)','Correct reading: thinking 10.0–10.5 m or braking 26.0–27.0 m (1)','Correct evaluation: 36.0–37.5 m (1)'],
+ '3di':['average speed = distance moved ÷ time taken (1)'],
+ '3dii':['A suitable pair of readings from the thinking-distance line, e.g. 15 m at 30 m/s (1)','Rearrangement: time = distance ÷ speed (1)','Evaluation: 0.40–0.60 s, e.g. 15 ÷ 30 = 0.50 s (1)'],
+ '3e':['Correct braking distance read from the graph: 52–53 m (1)','Substitution into v² = u² + 2as (1)','Rearrangement (1)','Evaluation: 8.5 m/s² (8.49–8.65), sign not needed (1)','Using stopping distance (answer 6.6) or thinking distance (answer 30) scores 3.']
+};
+const CHECK={
+ '2bii':()=>{const v=val('2bii','v');if(isNaN(v))return 'Type your speed as a number.';
+  if(inr(v,12.9,13.05))return finish('2bii',4,MS['2bii'],'v = √(6.3 × 10⁵ ÷ (0.5 × 7.5 × 10³)) = √168 = 13 m/s.');
+  let hint='Not quite: the answer is 13 m/s.';
+  if(inr(v,165,171))hint='You found v² = 168 but did not square-root it. The answer is 13 m/s.';
+  else if(inr(v,9.1,9.25))hint='It looks like you left out the ½ in KE = ½mv². The answer is 13 m/s.';
+  else if(inr(v,84,84.1))hint='You found mv² ÷ … without the ½ and without square-rooting. The answer is 13 m/s.';
+  openList('2bii',hint,3,0,MS['2bii'],hint);},
+ '2biii':()=>{if(text('2biii').length<15)return 'Write your answer first (at least a sentence).';openList('2biii',null,2,0,MS['2biii']);},
+ '2biv':()=>{const f=val('2biv','f');if(isNaN(f))return 'Type your force as a number. You can write 45000 or 4.5x10^4.';
+  if(inr(f,44500,45500))return finish('2biv',2,MS['2biv'],'F = 6.3 × 10⁵ ÷ 14 = 45 000 N.');
+  let hint='Not quite: the answer is 45 000 N.';if(inr(f,8.8e6,8.83e6))hint='You multiplied by 14 instead of dividing. The answer is 45 000 N.';
+  openList('2biv',hint,1,0,MS['2biv'],hint);},
+ '2c':()=>{if(text('2c').length<15)return 'Write your answer first (at least a sentence).';
+  openList('2c',null,3,0,MS['2c'],'Saying “no, it is not proportional” with no numbers scores 0.',t=>{const comps=(t[0]?1:0)+(t[1]?1:0);let m=comps+(t[2]&&comps>0?1:0);if(m===0&&t[3])m=1;return m;});},
+ '3c':()=>{const td=val('3c','td'),bd=val('3c','bd'),sd=val('3c','sd');if(isNaN(sd))return 'Type your stopping distance as a number.';
+  const ex='At 20 m/s: thinking distance 10 m + braking distance 26.5 m = 36.5 m.';
+  if(inr(sd,36,37.5))return finish('3c',3,MS['3c'],ex);
+  let m=0;if(inr(td,10,10.5)||inr(bd,26,27))m++;if(!isNaN(td)&&!isNaN(bd)&&Math.abs(sd-(td+bd))<=0.6)m++;
+  finish('3c',m,MS['3c'],ex+(m===0&&inr(sd,26,27)?' You gave the braking distance only: stopping distance adds the thinking distance too.':''));},
+ '3di':()=>{const r=partEl('3di').querySelector('input[type=radio]:checked');if(!r)return 'Choose one formula.';finish('3di',r.value==='b'?1:0,MS['3di']);},
+ '3dii':()=>{const sp=val('3dii','sp'),dd=val('3dii','dd'),rt=val('3dii','rt');if(isNaN(rt))return 'Type your reaction time as a number.';
+  const ex='For example, the thinking distance is 15 m at 30 m/s, so time = 15 ÷ 30 = 0.50 s.';
+  if(inr(rt,0.40,0.60))return finish('3dii',3,MS['3dii'],ex);
+  let m=0,note='';if(inr(sp,5,30)&&!isNaN(dd)&&Math.abs(dd-sp/2)<=0.6)m++;
+  if(sp>0&&dd>0&&Math.abs(rt-dd/sp)<=0.02)m++;else if(sp>0&&dd>0&&Math.abs(rt-sp/dd)<=0.05)note=' Your division is upside down: time = distance ÷ speed.';
+  else if(inr(sp,5,30)&&!isNaN(dd)&&Math.abs(dd-(0.04417*sp*sp+0.4417*sp))<=1.5)note=' You read the braking-distance curve. Reaction time uses the thinking-distance line.';
+  finish('3dii',m,MS['3dii'],ex+note);},
+ '3e':()=>{const bd=val('3e','bd');let a=val('3e','a');if(isNaN(a))return 'Type your acceleration as a number.';a=Math.abs(a);
+  const ex='Braking distance at 30 m/s = 53 m. 0² = 30² + 2 × a × 53, so a = −900 ÷ 106 = −8.5 m/s².';
+  if(inr(a,8.49,8.65))return finish('3e',4,MS['3e'],ex);
+  if(inr(a,6.5,6.7))return finish('3e',3,MS['3e'],'You used the stopping distance (68 m). Braking acceleration only uses the braking distance. '+ex);
+  if(inr(a,29.5,30.5))return finish('3e',3,MS['3e'],'You used the thinking distance (15 m). Braking acceleration only uses the braking distance. '+ex);
+  let hint='Not quite: the answer is 8.5 m/s².';if(inr(a,16.9,17.4))hint='You left out the 2 in 2as. The answer is 8.5 m/s².';else if(inr(a,0.55,0.6))hint='a = u ÷ s is not an equation. Use v² = u² + 2as. The answer is 8.5 m/s².';
+  openList('3e',hint,4,inr(bd,52,53.5)?1:0,MS['3e'],hint+' '+ex);}
+};
+function msg(id,t){const p=partEl(id),fb=p.querySelector('[data-fb]');fb.className='feedback show zero';fb.textContent=t;}
+document.querySelectorAll('.part').forEach(p=>{const id=p.dataset.part;p.querySelector('[data-check]').addEventListener('click',()=>{const r=CHECK[id]();if(typeof r==='string')msg(id,r);});
+ p.querySelectorAll('input,textarea').forEach(x=>x.addEventListener('change',save));});
+const nameEl=document.getElementById('studentName');nameEl.addEventListener('input',()=>{name=nameEl.value;update();save();});
+function update(){const done=ORDER.filter(k=>state[k]);const tot=done.reduce((s,k)=>s+state[k].m,0);
+ document.getElementById('laneFill').style.width=(tot/TOTAL*100)+'%';document.getElementById('lane').setAttribute('aria-valuenow',tot);
+ document.getElementById('roadScore').textContent=tot+' / 22 marks · '+done.length+' of 8 checked';
+ document.getElementById('sumTotal').textContent=tot;
+ const all=done.length===ORDER.length;document.getElementById('sumPct').textContent=all?'('+Math.round(tot/TOTAL*100)+'%)':'';
+ document.getElementById('sumNote').textContent=all?'All eight answers checked.':'Checked '+done.length+' of 8. Your total so far is below.';
+ const tb=document.getElementById('sumRows');tb.innerHTML='';
+ ORDER.forEach(k=>{const tr=document.createElement('tr');const m=state[k]?state[k].m:null;
+  [PARTS[k].label,m===null?'not checked':String(m),String(PARTS[k].max)].forEach(t=>{const td=document.createElement('td');td.textContent=t;tr.appendChild(td);});
+  const td=document.createElement('td');const bar=document.createElement('div');bar.className='bar';const sp=document.createElement('span');sp.style.width=(m===null?0:m/PARTS[k].max*100)+'%';bar.appendChild(sp);td.appendChild(bar);tr.appendChild(td);tb.appendChild(tr);});
+ const tg=document.getElementById('target');
+ if(done.length){const lost=done.map(k=>[k,PARTS[k].max-state[k].m]).sort((a,b)=>b[1]-a[1]);
+  if(lost[0][1]>0){tg.hidden=false;tg.textContent='';const s=document.createElement('strong');s.textContent='Your biggest win: '+PARTS[lost[0][0]].label+' ('+lost[0][1]+' marks lost). ';tg.appendChild(s);tg.appendChild(document.createTextNode(PARTS[lost[0][0]].tip));}
+  else tg.hidden=true;} else tg.hidden=true;
+ document.getElementById('copybox').value=(name||'[name]')+' | '+ORDER.map(k=>PARTS[k].label+' '+(state[k]?state[k].m:'-')+'/'+PARTS[k].max).join(' | ')+' | Total '+tot+'/22'+(all?' ('+Math.round(tot/TOTAL*100)+'%)':' (not finished)');}
+document.getElementById('copyBtn').addEventListener('click',async()=>{const box=document.getElementById('copybox');box.select();let ok=false;try{await navigator.clipboard.writeText(box.value);ok=true;}catch(e){try{ok=document.execCommand('copy');}catch(e2){}}
+ document.getElementById('copyBtn').textContent=ok?'Copied':'Select the text and copy it';});
+document.getElementById('resetBtn').addEventListener('click',()=>{if(confirm('Clear all your answers and marks?')){try{localStorage.removeItem(KEY);}catch(e){}location.reload();}});
+// restore
+try{const raw=localStorage.getItem(KEY);if(raw){const d=JSON.parse(raw);name=d.name||'';nameEl.value=name;
+ Object.entries(d.ins||{}).forEach(([id,vals])=>{const p=partEl(id);if(!p)return;const fields=[...p.querySelectorAll('input[type=text],textarea')];vals.forEach((v,i)=>{if(typeof v==='string'&&v.startsWith('radio:')){const r=p.querySelector('input[type=radio][value="'+v.slice(6)+'"]');if(r)r.checked=true;}else if(fields[i])fields[i].value=v;});});
+ Object.entries(d.state||{}).forEach(([id,s])=>{if(!PARTS[id])return;state[id]=s;showFb(id,s.m,MS[id],'Restored from earlier: answer already checked.');lock(id);});}}catch(e){}
+update();
+})();
+</script>
+</body>
+</html>
